@@ -1,0 +1,35 @@
+name: Python application
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Run script and save output to file
+      run: python next_race.py > next_race.txt
+    - name: Read output file into variable
+      id: read_file
+      run: echo "::set-output name=next_race::$(cat next_race.txt)"
+    - name: Update index.md with variable
+      run: |
+        echo "site:" >> _config.yml
+        echo "  data:" >> _config.yml
+        echo "    next_race: ${{ steps.read_file.outputs.next_race }}" >> _config.yml
+        echo "" >> _config.yml
+        sed -i 's/{{site.data.next_race}}/{{ site.data.next_race }}/g' index.md
+    - name: Commit changes
+      run: |
+        git config --global user.name 'Your Name'
+        git config --global user.email 'youremail@example.com'
+        git commit -am "Update index.md with latest F1 race information" && git push
