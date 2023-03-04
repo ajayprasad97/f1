@@ -8,4 +8,4 @@ soup = BeautifulSoup(response.text, 'html.parser')
 race_title = soup.find('div', {'class': 'event-title f1--xxs'}).text
 race_location = soup.find('div', {'class': 'event-place d-block'}).text
 
-print(f'Next race: {race_title} at {race_location}')
+print(f'Next race: {race_title}')
